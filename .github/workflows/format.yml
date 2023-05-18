@@ -6,18 +6,18 @@ jobs:
     strategy:
       matrix:
         elixir: [1.14]
-        opt: [25]
+        otp: [25]
     steps:
       - uses: actions/checkout@v2
       - uses: erlef/setup-elixir@v1
         with:
           elixir-version: ${{ matrix.elixir }}
           otp-version: ${{ matrix.otp }}
-      - uses: 
+      - uses: actions/cache@v1
         id: mix-format-cache
         with:
           path: deps
-          key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-${{ hashFiles(format('{0}-{1}')), github.workspace, '/mix.lock' }}
+          key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-${{ hashFiles(format('{0}-{1}', github.workspace, '/mix.lock')) }}
       - name: Install Mix Dependencies
         if: steps.mix-format-cache.outputs.cache-hit != 'true'
         run: mix deps.get
